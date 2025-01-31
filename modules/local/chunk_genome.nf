@@ -1,4 +1,4 @@
-process chunk_reference {
+process chunk_chromosome {
 container "glimpse:v2.0.0-27-g0919952_20221207"
 
 input:
