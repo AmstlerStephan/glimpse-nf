@@ -2,21 +2,23 @@
 
 nextflow.enable.dsl = 2
 
-include { CHUNK_GENOME } from './modules/chunk_genome'
+include { chunk_reference } from './modules/chunk_genome'
 include { SPLIT_REFERENCE } from './modules/split_reference'
 include { IMPUTE_PHASE } from './modules/impute_phase'
 include { LIGATE_CHUNKS } from './modules/ligate_chunks'
 
-workflow {
-    // Chunk genome
+workflow GLIMPSE_NF {
+    // static file paths
     genetic_map = file(params.genetic_map)
-    CHUNK_GENOME(PREPARE_REFERENCE.out.sites_vcf, genetic_map)
+    bam = file(params.bam)
+    
+    // Chunk genome
+    chunk_reference(PREPARE_REFERENCE.out.sites_vcf, genetic_map)
 
     // Split reference
     SPLIT_REFERENCE(PREPARE_REFERENCE.out.reference_bcf, genetic_map, CHUNK_GENOME.out.chunks)
 
     // Impute and phase
-    bam = file(params.bam)
     IMPUTE_PHASE(bam, SPLIT_REFERENCE.out.split_reference, CHUNK_GENOME.out.chunks)
 
     // Ligate chunks
