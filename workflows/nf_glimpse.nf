@@ -2,10 +2,10 @@
 
 nextflow.enable.dsl = 2
 
-include { chunk_chromosome } from './modules/chunk_chromosome'
-include { SPLIT_REFERENCE } from './modules/split_reference'
-include { IMPUTE_PHASE } from './modules/impute_phase'
-include { LIGATE_CHUNKS } from './modules/ligate_chunks'
+include { chunk_chromosome } from '../modules/local/chunk_genome'
+include { SPLIT_REFERENCE } from '../modules/local/split_reference'
+//include { IMPUTE_PHASE } from './modules/local/impute_phase'
+//include { LIGATE_CHUNKS } from './modules/local/ligate_chunks'
 
 workflow GLIMPSE_NF {
     // static file paths
@@ -14,10 +14,16 @@ workflow GLIMPSE_NF {
     bam = file(params.bam)
     
     // Chunk genome
-    chunk_chromosome(PREPARE_REFERENCE.out.sites_vcf, genetic_map)
+    //chunk_chromosome(PREPARE_REFERENCE.out.sites_vcf, genetic_map)
+
+    chunk_chromosome = 
+    channel.fromPath("$baseDir/data/testing/chunked_chromosome/chunks.chr22.txt")
+    .splitText( by:1 )
+    .splitCsv(header: ['ID', 'Chr', 'RegionIn', 'RegionOut', 'Size1', 'Size2', 'info1', 'info2'], sep: "\t", skip: 0)
+    .map { it -> [it["ID"], it["Chr"], it["RegionIn"], it["RegionOut"]]}
 
     // Split reference
-    //SPLIT_REFERENCE(PREPARE_REFERENCE.out.reference_bcf, genetic_map, CHUNK_GENOME.out.chunks)
+    SPLIT_REFERENCE(chunk_chromosome, genetic_map, CHUNK_GENOME.out.chunks)
 
     // Impute and phase
     //IMPUTE_PHASE(bam, SPLIT_REFERENCE.out.split_reference, CHUNK_GENOME.out.chunks)
