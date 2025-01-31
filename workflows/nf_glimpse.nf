@@ -17,13 +17,18 @@ workflow GLIMPSE_NF {
     //chunk_chromosome(PREPARE_REFERENCE.out.sites_vcf, genetic_map)
 
     chunk_chromosome = 
+    // Exchange the channel creation fromPath with the output of chunk_chromosome
     channel.fromPath("$baseDir/data/testing/chunked_chromosome/chunks.chr22.txt")
     .splitText( by:1 )
     .splitCsv(header: ['ID', 'Chr', 'RegionIn', 'RegionOut', 'Size1', 'Size2', 'info1', 'info2'], sep: "\t", skip: 0)
     .map { it -> [it["ID"], it["Chr"], it["RegionIn"], it["RegionOut"]]}
 
+    // independent test fles to implement split_reference
+    reference_bcf = file("$baseDir/data/reference_vcf/1000GP.chr22.noNA12878.bcf")
+    reference_bcf_index = file("$baseDir/data/reference_vcf/1000GP.chr22.noNA12878.bcf.csi")    
+    genetic_map = file("$baseDir/data/genetic_map/chr22.b38.gmap.gz")
     // Split reference
-    SPLIT_REFERENCE(chunk_chromosome, genetic_map, CHUNK_GENOME.out.chunks)
+    SPLIT_REFERENCE(chunk_chromosome, reference_bcf, reference_bcf_index, genetic_map)
 
     // Impute and phase
     //IMPUTE_PHASE(bam, SPLIT_REFERENCE.out.split_reference, CHUNK_GENOME.out.chunks)

@@ -2,8 +2,9 @@ process SPLIT_REFERENCE {
     publishDir 'reference_panel/split', mode: 'copy'
 
     input:
-    tuple val(chunk_id), val(chromosome), val(input_region), val(output_region)
+    tuple val(chunk_id), val(chr), val(input_region), val(output_region)
     path reference
+    path reference_index
     path genetic_map
 
     output:
