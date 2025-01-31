@@ -1,1 +1,39 @@
 
+#!/usr/bin/env nextflow
+
+// This is a test script illustrating combining two lists of files based on their corresponding chromosome: reference VCFs and genetic map files
+// The idea is to produce a list of tuples [chrN,chrN.gmap.gz,chrN.reference.vcf.gz]
+// and feed this list to split_reference process
+
+params.refpanel_dir="../refpanel/"
+params.genmap_dir="../glimpse-nf/data/genetic_map/"
+
+process test_process {
+input:
+tuple val(x),path(p1),path(p2)
+
+script:
+"""
+echo TEST
+# echo "test_process: $x $p1 $p2"
+"""
+
+}
+
+workflow test {
+C=Channel.fromPath(params.refpanel_dir+"*.vcf.gz").map{x ->
+def z=x=~/(chr[0-9]+)/
+[z[0][1],x]
+}
+
+C2=Channel.fromPath(params.genmap_dir+"chr*.gmap.gz")
+.map{x ->
+def z=x=~/(chr[^.]+)/
+[z[0][1],x]
+}
+
+C3=C2.join(C)
+C3.view()
+
+test_process(C3)
+}
