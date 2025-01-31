@@ -23,11 +23,7 @@ if (params.validate_params) {
     validateParameters()
 }
 
-// Print summary of supplied parameters
-log.info paramsSummaryLog(workflow)
-
-
-include { GLIMPSE_NF } from './workflows/glimpse_nf'
+include { GLIMPSE_NF } from "${baseDir}/workflows/nf_glimpse"
 
 /*
 ========================================================================================
