@@ -1,0 +1,12 @@
+work
+.nextflow
+.nextflow.*
+tests/output
+/results/
+/output/
+.nf-test/
+nf-test
+.project
+.DS_Store
+.nf-test.log
+data/reference_vcf/

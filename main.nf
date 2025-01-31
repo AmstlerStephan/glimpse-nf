@@ -27,7 +27,7 @@ if (params.validate_params) {
 log.info paramsSummaryLog(workflow)
 
 
-include { NF_GWAS } from './workflows/nf_gwas'
+include { GLIMPSE_NF } from './workflows/glimpse_nf'
 
 /*
 ========================================================================================
@@ -36,5 +36,5 @@ include { NF_GWAS } from './workflows/nf_gwas'
 */
 
 workflow {
-    NF_GWAS ()
+    GLIMPSE_NF ()
 }
